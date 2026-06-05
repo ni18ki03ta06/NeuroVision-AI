@@ -15,7 +15,7 @@ st.set_page_config(
 )
 
 # ── CSS ──────────────────────────────────────────────────
-st.markdown("""
+st.html("""
 <style>
 #MainMenu, footer, header {visibility: hidden;}
 
@@ -73,7 +73,7 @@ st.markdown("""
   line-height: 1.6; margin-top: 8px;
 }
 </style>
-""", unsafe_allow_html=True)
+""")
 
 # ── Load models ───────────────────────────────────────────
 stage1_model, stage2_model, model_error = load_models()
@@ -82,14 +82,14 @@ if model_error:
 
 # ── Sidebar ───────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("""
+    st.html("""
     <div class="nv-logo">
       🧠 NeuroVision AI <span class="beta-badge">BETA</span>
     </div>
     <p style="font-size:11px;color:#6e7681;margin-bottom:16px;">
       Advanced MRI Neuro-Diagnostic System
     </p>
-    """, unsafe_allow_html=True)
+    """)
 
     uploaded = st.file_uploader(
         'Upload Brain MRI Scan',
@@ -113,7 +113,7 @@ with st.sidebar:
     # Stage 1 confidence bars rendered after prediction
     if 'result' in st.session_state:
         r = st.session_state.result
-        st.markdown('<p style="font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.05em;">Stage 1 — Tumor type</p>', unsafe_allow_html=True)
+        st.html('<p style="font-size:11px;color:#6e7681;text-transform:uppercase;letter-spacing:.05em;">Stage 1 — Tumor type</p>')
         bars_html = ''
         for cls, pct in r['stage1_confidences'].items():
             is_top = pct == max(r['stage1_confidences'].values())
@@ -128,12 +128,12 @@ with st.sidebar:
               </div>
               <span class="conf-pct" style="font-weight:{weight};color:{color};">{pct}%</span>
             </div>"""
-        st.markdown(bars_html, unsafe_allow_html=True)
+        st.html(bars_html)
 
 # ── Main panel ────────────────────────────────────────────
 if uploaded is None:
     # Empty state
-    st.markdown("""
+    st.html("""
     <div style="text-align:center;padding:80px 20px;color:#6e7681;">
       <div style="font-size:48px;margin-bottom:16px;">🧠</div>
       <div style="font-size:18px;font-weight:500;color:#c9d1d9;margin-bottom:8px;">
@@ -143,7 +143,7 @@ if uploaded is None:
         Accepts T1 / T1C+ / T2 — JPG, JPEG, PNG, WEBP — max 10 MB
       </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
     st.stop()
 
 # ── Run prediction ────────────────────────────────────────
@@ -180,19 +180,19 @@ with col_right:
     p1 = 'pill-done' if all_done else 'pill'
     p2 = 'pill-done' if s2_done  else 'pill'
     p3 = 'pill-active' if all_done else 'pill'
-    st.markdown(f"""
+    st.html(f"""
     <div class="pills">
       <span class="{p1}">✓ Stage 1: Type</span>
       <span class="{p2}">✓ Stage 2: Severity</span>
       <span class="{p3}">⚡ GradCAM</span>
       <span class="pill pill-done">🔁 TTA ×8</span>
-    </div>""", unsafe_allow_html=True)
+    </div>""")
 
     # Metric cards
     risk      = result['risk_level']
     risk_col  = {'high':'#f87171','medium':'#fb923c',
                  'low':'#4ade80','none':'#4ade80'}.get(risk,'#c9d1d9')
-    st.markdown(f"""
+    st.html(f"""
     <div class="metric-row">
       <div class="metric-card">
         <div class="metric-label">Tumor type</div>
@@ -209,7 +209,7 @@ with col_right:
         <div class="metric-val" style="font-size:16px;color:#c9d1d9;">{result['modality']}</div>
         <div class="metric-sub">Selected input type</div>
       </div>
-    </div>""", unsafe_allow_html=True)
+    </div>""")
 
     low_conf = result['stage1_top_pct'] < conf_threshold
     warn = (
@@ -218,7 +218,7 @@ with col_right:
         f'{conf_threshold}% threshold. Consider retraining the model or '
         f'lowering the threshold for exploratory use.</span>'
     ) if low_conf else ''
-    st.markdown(f"""
+    st.html(f"""
     <div class="result-card result-card-{risk}">
       <div class="result-top">
         <div>
@@ -228,7 +228,7 @@ with col_right:
         <span class="risk-{risk}">{risk.upper()} RISK</span>
       </div>
       <div class="result-desc">{result['description']}{warn}</div>
-    </div>""", unsafe_allow_html=True)
+    </div>""")
 
     # Stage 2 Plotly chart
     s2   = result['stage2_confidences']
@@ -259,19 +259,19 @@ with col_right:
     st.plotly_chart(fig, use_container_width=True)
 
     # Disclaimer
-    st.markdown("""
+    st.html("""
     <div class="disc">
       🛡️ <strong>For research use only</strong> — not a diagnostic tool.
       This system uses deep learning to predict MRI anomalies and must not
       substitute professional clinical diagnosis.
-    </div>""", unsafe_allow_html=True)
+    </div>""")
 
 # ── Footer ────────────────────────────────────────────────
 st.markdown('---')
 foot_l, foot_m, foot_r = st.columns([2, 1, 1])
 
 with foot_l:
-    st.markdown('<p style="font-size:11px;color:#484f58;padding-top:8px;">T1 / T1C+ / T2 — max 10 MB — .jpg .jpeg .png .webp</p>', unsafe_allow_html=True)
+    st.html('<p style="font-size:11px;color:#484f58;padding-top:8px;">T1 / T1C+ / T2 — max 10 MB — .jpg .jpeg .png .webp</p>')
 
 with foot_m:
     if st.button('🔄 New scan', use_container_width=True):
