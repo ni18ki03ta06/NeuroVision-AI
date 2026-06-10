@@ -1,0 +1,82 @@
+/* Import core vanilla CSS layout and system variables */
+@import "./index.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── 1. Base Styles & Scroll Settings ─────────────────────── */
+@layer base {
+  html, body {
+    background-color: #07090e;
+    color: #e6edf3;
+    font-family: 'Inter', -apple-system, sans-serif;
+    scroll-behavior: smooth;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', -apple-system, sans-serif;
+    color: #ffffff;
+  }
+}
+
+/* ── 2. Custom Scrollbar Styling ──────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(7, 9, 14, 0.4);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(48, 54, 61, 0.8);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(79, 70, 229, 0.5); /* Matching primary-600 */
+}
+
+/* ── 3. Custom Utilities & Glassmorphism ───────────────────── */
+@layer components {
+  .glass-panel {
+    @apply bg-slate-850/75 backdrop-blur-md border border-slate-800/80 rounded-2xl shadow-glass transition-all duration-200;
+  }
+
+  .spinner-loader {
+    @apply border-2 border-primary-light/10 border-l-primary w-5 h-5 rounded-full animate-spin;
+  }
+
+  .btn-hover-glow {
+    @apply hover:shadow-glow-primary hover:border-primary-light/50 transition-all duration-200;
+  }
+}
+
+/* ── 4. Animations Definitions ────────────────────────────── */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Rotate utility for spinners */
+.animate-spin-slow {
+  animation: spin 3s linear infinite;
+}

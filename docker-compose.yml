@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # FastAPI Deep Learning Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: neurovision-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount models folder dynamically to host so weights can be updated without rebuilding
+      - ./backend/models:/app/models
+    environment:
+      - FASTAPI_ENV=production
+      - MODEL_PATH=./models/
+      - DEBUG=false
+      - ALLOWED_ORIGINS=http://localhost
+    networks:
+      - neurovision-network
+    restart: unless-stopped
+
+  # React SPA Static Nginx Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: neurovision-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_BASE_URL=http://localhost:8000/api
+      - REACT_APP_API_TIMEOUT=30000
+      - REACT_APP_ENVIRONMENT=production
+    networks:
+      - neurovision-network
+    restart: unless-stopped
+
+networks:
+  neurovision-network:
+    driver: bridge
