@@ -10,3 +10,16 @@ class PDFReportRequest(BaseModel):
     physician: Optional[str] = "N/A"
     notes: Optional[str] = ""
     signature: Optional[str] = ""
+
+class BatchPDFCaseItem(BaseModel):
+    result: Dict[str, Any]
+    original_image: str
+    gradcam_heatmap: str
+    patient_name: Optional[str] = "N/A"
+    ref_id: Optional[str] = "N/A"
+
+class BatchPDFReportRequest(BaseModel):
+    cases: list[BatchPDFCaseItem]
+    physician: Optional[str] = "N/A"
+    notes: Optional[str] = ""
+    signature: Optional[str] = ""

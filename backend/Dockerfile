@@ -17,6 +17,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY main.py config.py .env.example .env ./
 COPY src/ ./src/
 COPY models/ ./models/
+COPY fonts/ ./fonts/
 
 # Expose FastAPI default port
 EXPOSE 8000

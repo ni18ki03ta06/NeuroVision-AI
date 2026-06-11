@@ -63,3 +63,55 @@ export async function getPredictionHistory() {
     return JSON.parse(localStorage.getItem('neurovision_saved') || '[]');
   }
 }
+
+/**
+ * Deletes a specific prediction from database history.
+ * @param {number} id - The database record ID
+ * @returns {Promise<Object>} Deletion result
+ */
+export async function deletePredictionHistoryItem(id) {
+  try {
+    return await apiClient.delete(`/history/${id}`);
+  } catch (e) {
+    console.error("Failed to delete database history item, falling back", e);
+    // Fallback for localStorage
+    const saved = JSON.parse(localStorage.getItem('neurovision_saved') || '[]');
+    const filtered = saved.filter(item => item.id !== id);
+    localStorage.setItem('neurovision_saved', JSON.stringify(filtered));
+    return { status: "success", message: "Deleted from local storage" };
+  }
+}
+
+/**
+ * Uploads multiple MRI scans for batch classification.
+ * @param {FileList|Array} files - File objects list
+ * @param {string} modality - Modal configuration
+ * @returns {Promise<Array>} List of predictions
+ */
+export async function uploadAndPredictBatch(files, modality = "Auto-detect") {
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    formData.append("files", files[i]);
+  }
+  formData.append("modality", modality);
+  
+  return apiClient.post('/predict/batch', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    }
+  });
+}
+
+/**
+ * Compiles a batch of diagnostic results into a single multi-page PDF document.
+ * @param {Object} batchPayload - The list of cases and signing physician metadata
+ * @returns {Promise<Blob>} Binary PDF stream Blob
+ */
+export async function generateBatchPDF(batchPayload) {
+  return apiClient.post('/generate-pdf/batch', batchPayload, {
+    responseType: 'blob',
+    headers: {
+      'Accept': 'application/pdf',
+    }
+  });
+}

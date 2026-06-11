@@ -31,3 +31,34 @@ def test_predict_endpoint(client, sample_image_bytes):
     else:
         assert response.status_code == 500
         assert "detail" in response.json()
+
+
+def test_predict_batch_endpoint(client, sample_image_bytes):
+    """
+    Tests uploading multiple dummy image slices to /api/predict/batch and checks
+    that the response contains a list of predictions.
+    """
+    response = client.post(
+        "/api/predict/batch",
+        files=[
+            ("files", ("test1.jpg", sample_image_bytes, "image/jpeg")),
+            ("files", ("test2.jpg", sample_image_bytes, "image/jpeg"))
+        ],
+        data={"modality": "T1"}
+    )
+    
+    # Either successfully processes the batch or gracefully returns 500 if weights missing.
+    if response.status_code == 200:
+        data = response.json()
+        assert isinstance(data, list)
+        assert len(data) == 2
+        for pred in data:
+            assert "tumor_type" in pred
+            assert "severity_class" in pred
+            assert "risk_level" in pred
+            assert "original_image" in pred
+            assert "gradcam_heatmap" in pred
+    else:
+        assert response.status_code == 500
+        assert "detail" in response.json()
+

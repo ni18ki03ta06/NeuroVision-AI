@@ -5,6 +5,7 @@ export default function Navbar({ activeTab, setActiveTab, apiStatus }) {
   const tabs = [
     { id: 'home', label: 'Home' },
     { id: 'analyze', label: 'Analysis' },
+    { id: 'history', label: 'History' },
     { id: 'results', label: 'Performance' },
     { id: 'docs', label: 'Methodology' },
     { id: 'about', label: 'Team Info' }
@@ -26,6 +27,8 @@ export default function Navbar({ activeTab, setActiveTab, apiStatus }) {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
+            aria-label={`Navigate to ${tab.label}`}
+            aria-current={activeTab === tab.id ? "page" : undefined}
             style={{
               background: activeTab === tab.id ? 'var(--primary-glow)' : 'transparent',
               border: activeTab === tab.id ? '1px solid var(--primary-border)' : '1px solid transparent',

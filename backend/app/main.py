@@ -8,9 +8,10 @@ from fastapi import FastAPI, UploadFile, File, Form, HTTPException, BackgroundTa
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
 
+from typing import List
 from backend.app.core.config import CORS_ORIGINS
 from backend.app.schemas.predict import PredictionResponse
-from backend.app.schemas.report import PDFReportRequest
+from backend.app.schemas.report import PDFReportRequest, BatchPDFReportRequest
 from backend.app.services.inference import load_cached_models, predict, get_gradcam_base64
 from backend.app.services.pdf_generator import generate_pdf_report
 
@@ -24,6 +25,16 @@ async def lifespan(app: FastAPI):
         print("NeuroVision models successfully loaded and ready for inference.")
     except Exception as e:
         print(f"ERROR pre-loading models during startup: {str(e)}")
+        
+    # Initialize SQLite database
+    print("Initializing SQLite database...")
+    try:
+        from backend import database
+        database.init_db()
+        print("SQLite database initialized successfully.")
+    except Exception as e:
+        print(f"Failed to initialize SQLite database: {str(e)}")
+        
     yield
     print("Shutting down NeuroVision API...")
 
@@ -113,11 +124,36 @@ async def predict_mri(
                 opacity=1.0
             )
 
-        return {
+        # Prepare database record payload
+        pred_record = {
+            'patient_name': "Pending / Anonymous",
+            'ref_id': f"REF-{os.urandom(4).hex().upper()}",
+            'modality': result['modality'],
             'tumor_type': result['tumor_type'],
             'severity_class': result['severity_class'],
             'risk_level': result['risk_level'],
-            'risk_label': f"{result['risk_level'].upper()} Risk", # Helper mapping
+            'risk_label': f"{result['risk_level'].upper()} Risk",
+            'description': result['description'],
+            'stage1_top_pct': result['stage1_top_pct'],
+            'original_image': original_base64,
+            'gradcam_heatmap': heatmap_base64_dict['jet'],
+            'stage1_confidences': result['stage1_confidences'],
+            'stage2_confidences': result['stage2_confidences']
+        }
+        
+        db_id = None
+        try:
+            from backend import database
+            db_id = database.save_prediction(pred_record)
+        except Exception as db_err:
+            print(f"Warning: Failed to save prediction to SQLite database: {str(db_err)}")
+
+        return {
+            'id': db_id,
+            'tumor_type': result['tumor_type'],
+            'severity_class': result['severity_class'],
+            'risk_level': result['risk_level'],
+            'risk_label': f"{result['risk_level'].upper()} Risk",
             'description': result['description'],
             'stage1_confidences': result['stage1_confidences'],
             'stage2_confidences': result['stage2_confidences'],
@@ -130,6 +166,178 @@ async def predict_mri(
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to compile predictions output: {str(e)}")
+
+@app.post("/api/predict/batch", response_model=List[PredictionResponse])
+async def predict_mri_batch(
+    files: List[UploadFile] = File(...),
+    modality: str = Form("Auto-detect")
+):
+    """Processes multiple MRI image scans sequentially for 2-stage classification and GradCAM overlays."""
+    results = []
+    for file in files:
+        if not file.content_type.startswith("image/"):
+            raise HTTPException(status_code=400, detail=f"File {file.filename} is not a valid image.")
+
+        try:
+            contents = await file.read()
+            pil_image = Image.open(io.BytesIO(contents)).convert("RGB")
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to parse image file {file.filename}: {str(e)}")
+
+        # Run predictions (internally triggers model loading/caching)
+        result = predict(pil_image, modality=modality)
+        
+        # Retrieve the active Stage 1 model from cache for GradCAM extraction
+        stage1_model, _ = load_cached_models()
+
+        try:
+            # Pre-render the resized original image (224x224) as Base64
+            resized_orig = pil_image.resize((224, 224))
+            buffered = io.BytesIO()
+            resized_orig.save(buffered, format="JPEG", quality=85)
+            original_base64 = f"data:image/jpeg;base64,{base64.b64encode(buffered.getvalue()).decode('utf-8')}"
+            
+            # Pre-render pure colormapped heatmaps (opacity=1.0) for all popular scales
+            colormaps = ['jet', 'hot', 'viridis', 'plasma', 'inferno', 'magma']
+            heatmap_base64_dict = {}
+            for cm in colormaps:
+                heatmap_base64_dict[cm] = get_gradcam_base64(
+                    model=stage1_model,
+                    pil_image=pil_image,
+                    class_idx=result['pred_type_idx'],
+                    colormap_name=cm,
+                    opacity=1.0
+                )
+
+            # Prepare database record payload
+            pred_record = {
+                'patient_name': f"Batch Scan: {file.filename}",
+                'ref_id': f"REF-{os.urandom(4).hex().upper()}",
+                'modality': result['modality'],
+                'tumor_type': result['tumor_type'],
+                'severity_class': result['severity_class'],
+                'risk_level': result['risk_level'],
+                'risk_label': f"{result['risk_level'].upper()} Risk",
+                'description': result['description'],
+                'stage1_top_pct': result['stage1_top_pct'],
+                'original_image': original_base64,
+                'gradcam_heatmap': heatmap_base64_dict['jet'],
+                'stage1_confidences': result['stage1_confidences'],
+                'stage2_confidences': result['stage2_confidences']
+            }
+            
+            db_id = None
+            try:
+                from backend import database
+                db_id = database.save_prediction(pred_record)
+            except Exception as db_err:
+                print(f"Warning: Failed to save batch prediction to SQLite: {str(db_err)}")
+
+            results.append({
+                'id': db_id,
+                'tumor_type': result['tumor_type'],
+                'severity_class': result['severity_class'],
+                'risk_level': result['risk_level'],
+                'risk_label': f"{result['risk_level'].upper()} Risk",
+                'description': result['description'],
+                'stage1_confidences': result['stage1_confidences'],
+                'stage2_confidences': result['stage2_confidences'],
+                'stage1_top_pct': result['stage1_top_pct'],
+                'modality': result['modality'],
+                'pred_type_idx': result['pred_type_idx'],
+                'original_image': original_base64,
+                'gradcam_heatmap': heatmap_base64_dict['jet'],
+                'heatmaps': heatmap_base64_dict
+            })
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Inference error on {file.filename}: {str(e)}")
+
+    return results
+
+@app.get("/api/history")
+async def get_history():
+    """Retrieves list of all past MRI scan predictions."""
+    try:
+        from backend import database
+        return database.get_predictions()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve history: {str(e)}")
+
+@app.delete("/api/history/{id}")
+async def delete_history_item(id: int):
+    """Deletes a specific past MRI scan prediction from history."""
+    try:
+        from backend import database
+        success = database.delete_prediction(id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Prediction record not found.")
+        return {"status": "success", "message": f"Record {id} deleted successfully."}
+    except HTTPException as he:
+        raise he
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete record: {str(e)}")
+
+@app.post("/api/generate-pdf/batch")
+async def generate_pdf_batch(
+    request: BatchPDFReportRequest,
+    background_tasks: BackgroundTasks
+):
+    """Compiles multiple MRI scans and predictions into a single multi-page PDF report."""
+    temp_files = []
+    cases_payloads = []
+    
+    try:
+        # Loop and decode all case images
+        for case in request.cases:
+            # Decode original image
+            orig_data = case.original_image.split(",")[1] if "," in case.original_image else case.original_image
+            orig_bytes = base64.b64decode(orig_data)
+            orig_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+            orig_file.write(orig_bytes)
+            orig_file.close()
+            temp_files.append(orig_file.name)
+
+            # Decode heatmap image
+            heat_data = case.gradcam_heatmap.split(",")[1] if "," in case.gradcam_heatmap else case.gradcam_heatmap
+            heat_bytes = base64.b64decode(heat_data)
+            heat_file = tempfile.NamedTemporaryFile(delete=False, suffix=".jpg")
+            heat_file.write(heat_bytes)
+            heat_file.close()
+            temp_files.append(heat_file.name)
+
+            cases_payloads.append({
+                'result': case.result,
+                'patient_name': case.patient_name,
+                'ref_id': case.ref_id,
+                'orig_path': orig_file.name,
+                'gradcam_path': heat_file.name
+            })
+    except Exception as e:
+        cleanup_files(temp_files)
+        raise HTTPException(status_code=400, detail=f"Failed to decode batch report image assets: {str(e)}")
+
+    try:
+        # Run batch PDF generator
+        from backend.app.services.pdf_generator import generate_batch_pdf_report
+        pdf_path = generate_batch_pdf_report(
+            cases=cases_payloads,
+            physician=request.physician,
+            notes=request.notes,
+            signature=request.signature
+        )
+
+        # Enqueue background cleanups
+        background_tasks.add_task(cleanup_files, temp_files + [pdf_path])
+
+        return FileResponse(
+            pdf_path, 
+            media_type="application/pdf", 
+            filename="neurovision_batch_report.pdf"
+        )
+    except Exception as e:
+        cleanup_files(temp_files)
+        raise HTTPException(status_code=500, detail=f"Batch PDF compilation failed: {str(e)}")
+
 
 # ── 2. GET /api/models/info ───────────────────────────────────
 @app.get("/api/models/info")

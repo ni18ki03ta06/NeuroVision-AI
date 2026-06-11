@@ -68,8 +68,13 @@ def predict_with_tta(model, pil_image, image_size=224):
     # Average all 8 predictions
     return torch.stack(all_probs).mean(dim=0)
 
+_MODEL_CACHE = {}
+
 @st.cache_resource
 def load_models():
+    if 's1' in _MODEL_CACHE and 's2' in _MODEL_CACHE:
+        return _MODEL_CACHE['s1'], _MODEL_CACHE['s2'], None
+
     s1 = build_tumor_classifier(num_classes=4)
     s2 = build_tumor_classifier(num_classes=6)
 
@@ -86,6 +91,9 @@ def load_models():
     s2.load_state_dict(torch.load(s2_path, map_location='cpu')['model_state'])
     s1.eval()
     s2.eval()
+    
+    _MODEL_CACHE['s1'] = s1
+    _MODEL_CACHE['s2'] = s2
     return s1, s2, None
 
 def run_pipeline(pil_image, stage1_model, stage2_model, modality='Auto-detect'):

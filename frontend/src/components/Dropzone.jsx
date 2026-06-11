@@ -48,6 +48,15 @@ export default function Dropzone({ onFileSelected, disabled }) {
   return (
     <div 
       className={`dropzone ${isDragActive ? 'dropzone-active' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-label="Upload Brain MRI Scan slice. Press Enter or Space to select files, or drag and drop image files."
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onButtonClick();
+        }
+      }}
       onDragEnter={handleDrag}
       onDragOver={handleDrag}
       onDragLeave={handleDrag}

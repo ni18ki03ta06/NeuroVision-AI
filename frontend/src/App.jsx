@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './layout/Navbar';
 import Sidebar from './layout/Sidebar';
 import Footer from './layout/Footer';
 
 import HomePage from './pages/HomePage';
 import AnalysisPage from './pages/AnalysisPage';
+import HistoryPage from './pages/HistoryPage';
 import ResultsPage from './pages/ResultsPage';
 import DocumentationPage from './pages/DocumentationPage';
-import AboutPage from './pages/AboutPage';
 
 import ImageUploader from './components/ImageUploader';
 import CaseQueue from './components/CaseQueue';
 import { uploadMRI, generatePDFReport } from './services/api';
+
+import { Toaster, toast } from 'react-hot-toast';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function App() {
   // Navigation & API status states
@@ -35,15 +37,25 @@ export default function App() {
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState(null);
 
-  // Health check API on startup
-  useEffect(() => {
+  const checkApiHealth = async () => {
     const apiBaseUrl = import.meta.env.REACT_APP_API_BASE_URL || "http://localhost:8000/api";
     const healthUrl = apiBaseUrl.replace(/\/api\/?$/, "") + "/health";
-    fetch(healthUrl)
-      .then(res => {
-        if (res.ok) setApiStatus(true);
-      })
-      .catch(() => setApiStatus(false));
+    try {
+      const res = await fetch(healthUrl);
+      if (res.ok) {
+        setApiStatus(true);
+        return true;
+      }
+    } catch {}
+    setApiStatus(false);
+    return false;
+  };
+
+  // Health check API on startup and periodically
+  useEffect(() => {
+    checkApiHealth();
+    const interval = setInterval(checkApiHealth, 8000); // Check every 8s
+    return () => clearInterval(interval);
   }, []);
 
   // Reprocess active case when MRI modality is switched globally
@@ -56,20 +68,23 @@ export default function App() {
     }
   }, [modality]);
 
-  const handleFileUploaded = async (file) => {
+  const handleFileUploaded = async (file, targetModality = modality) => {
     setIsAnalyzing(true);
     setError(null);
     setActiveTab('analyze'); // Route to analysis console instantly on upload
     
+    const toastId = toast.loading(`Uploading & processing scan: ${file.name}...`);
     try {
-      const result = await uploadMRI(file, modality);
+      const result = await uploadMRI(file, targetModality);
       setCases(prev => ({
         ...prev,
         [file.name]: { file, result }
       }));
       setActiveCaseName(file.name);
+      toast.success("MRI Scan processed successfully!", { id: toastId });
     } catch (err) {
       setError(err.message || "Failed to process MRI scan");
+      toast.error(`Analysis failed: ${err.message || "Unknown error"}`, { id: toastId });
     } finally {
       setIsAnalyzing(false);
     }
@@ -78,14 +93,17 @@ export default function App() {
   const reprocessCase = async (filename, file, targetModality) => {
     setIsAnalyzing(true);
     setError(null);
+    const toastId = toast.loading(`Reprocessing scan with ${targetModality}...`);
     try {
       const result = await uploadMRI(file, targetModality);
       setCases(prev => ({
         ...prev,
         [filename]: { file, result }
       }));
+      toast.success("Recalculation completed!", { id: toastId });
     } catch (err) {
       setError(`Recalculation error: ${err.message}`);
+      toast.error(`Recalculation failed: ${err.message}`, { id: toastId });
     } finally {
       setIsAnalyzing(false);
     }
@@ -95,6 +113,7 @@ export default function App() {
     if (!activeCaseName || !cases[activeCaseName]) return;
     setIsExporting(true);
     setError(null);
+    const toastId = toast.loading("Compiling clinical PDF report...");
     
     try {
       const activeCase = cases[activeCaseName];
@@ -105,6 +124,7 @@ export default function App() {
         result: {
           tumor_type: res.tumor_type,
           severity_class: res.severity_class,
+          risk_level: res.risk_level,
           risk_label: res.risk_label,
           stage1_top_pct: res.stage1_top_pct,
           modality: res.modality,
@@ -131,8 +151,10 @@ export default function App() {
       
       window.URL.revokeObjectURL(downloadUrl);
       link.remove();
+      toast.success("Clinical PDF report downloaded successfully!", { id: toastId });
     } catch (err) {
       setError(`PDF generation failed: ${err.message}`);
+      toast.error(`PDF generation failed: ${err.message}`, { id: toastId });
     } finally {
       setIsExporting(false);
     }
@@ -146,7 +168,7 @@ export default function App() {
       {/* ── Left Sidebar Navigation Panel ───────────────────── */}
       <div className="sidebar">
         {/* Sidebar navigation links switch list */}
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} apiStatus={apiStatus} />
         
         <hr className="divider" />
 
@@ -199,55 +221,75 @@ export default function App() {
             onChange={(e) => setConfThreshold(parseInt(e.target.value))}
           />
         </div>
-
-        <hr className="divider" />
-
-        {/* Cases list queue */}
-        <span className="section-label">Scan Case Queue</span>
-        <CaseQueue 
-          cases={cases} 
-          activeCaseName={activeCaseName} 
-          onCaseSelected={(name) => {
-            setActiveCaseName(name);
-            setActiveTab('analyze'); // Reroute to console on case select
-          }} 
-        />
       </div>
 
       {/* ── Main Dashboard Workspace ─────────────────────────── */}
       <div className="workspace">
-        {/* Horizontal Navigation Header */}
-        <Navbar 
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
-          apiStatus={apiStatus} 
-        />
+
 
         <div className="scrollable-content" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           
-          {/* Dynamic Page Router Switcher */}
-          {activeTab === 'home' && <HomePage setActiveTab={setActiveTab} />}
-          
-          {activeTab === 'analyze' && (
-            <AnalysisPage
-              activeCaseName={activeCaseName}
-              activeCase={activeCase}
-              confThreshold={confThreshold}
-              opacity={opacity}
-              setOpacity={setOpacity}
-              selectedColormap={selectedColormap}
-              setSelectedColormap={setSelectedColormap}
-              isAnalyzing={isAnalyzing}
-              isExporting={isExporting}
-              handleExportReport={handleExportReport}
-            />
-          )}
+          <Toaster 
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#161b22',
+                color: '#e6edf3',
+                border: '1px solid rgba(48, 54, 61, 0.7)',
+                borderRadius: '10px',
+                fontSize: '13px',
+              },
+              success: {
+                iconTheme: {
+                  primary: '#10b981',
+                  secondary: '#161b22',
+                },
+              },
+              error: {
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#161b22',
+                },
+              },
+            }}
+          />
 
-          {activeTab === 'results' && <ResultsPage />}
+          {/* Dynamic Page Router Switcher with Framer Motion Page Transitions */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+              style={{ display: 'flex', flexDirection: 'column', flex: 1 }}
+            >
+              {activeTab === 'home' && <HomePage setActiveTab={setActiveTab} />}
+              
+              {activeTab === 'analyze' && (
+                <AnalysisPage
+                  activeCaseName={activeCaseName}
+                  activeCase={activeCase}
+                  confThreshold={confThreshold}
+                  opacity={opacity}
+                  setOpacity={setOpacity}
+                  isAnalyzing={isAnalyzing}
+                  isExporting={isExporting}
+                  handleExportReport={handleExportReport}
+                  apiStatus={apiStatus}
+                  checkApiHealth={checkApiHealth}
+                  onFileUploaded={handleFileUploaded}
+                />
+              )}
 
-          {activeTab === 'docs' && <DocumentationPage />}
+              {activeTab === 'results' && <ResultsPage />}
 
-          {activeTab === 'about' && <AboutPage />}
+              {activeTab === 'history' && <HistoryPage />}
+
+              {activeTab === 'docs' && <DocumentationPage />}
+            </motion.div>
+          </AnimatePresence>
 
           {/* Footer branding */}
           <Footer />

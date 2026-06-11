@@ -158,13 +158,6 @@ export default function HomePage({ setActiveTab }) {
           >
             <Activity className="w-3.5 h-3.5" /> Performance Charts
           </button>
-          <span className="text-slate-700">|</span>
-          <button 
-            onClick={() => setActiveTab('about')} 
-            className="text-xs font-semibold text-violet-400 hover:text-violet-300 transition-colors duration-150 flex items-center gap-1"
-          >
-            <Users className="w-3.5 h-3.5" /> Team details
-          </button>
         </div>
       </div>
 

@@ -22,7 +22,7 @@ def generate_image(size_px):
     img.save(buf, format='JPEG')
     return buf.getvalue()
 
-async def test_single_request(client, img_bytes):
+async def _run_single_request(client, img_bytes):
     """Fires a single predict request and returns the latency duration alongside response status."""
     start = time.perf_counter()
     files = {"file": ("test.jpg", img_bytes, "image/jpeg")}
@@ -58,7 +58,7 @@ async def main():
         except Exception:
             print("Error: Backend is not reachable on port 8000. Boot server first.")
             return
-
+ 
         # 2. Test Image Scaling Latencies
         print("\n[1] Testing Prediction Latency by Image Size (Single Requests):")
         for name, data in img_data.items():
@@ -67,7 +67,7 @@ async def main():
             
             # Execute 5 iterations per size to compute averages
             for _ in range(5):
-                lat, status = await test_single_request(client, data)
+                lat, status = await _run_single_request(client, data)
                 if status == 200:
                     latencies.append(lat)
                     
@@ -78,7 +78,7 @@ async def main():
                 print(f"  - {name:16}: Avg Latency = {avg_lat:5.3f}s | Memory Diff = {mem_end - mem_start:+6.3f} MB")
             else:
                 print(f"  - {name:16}: Prediction requests failed (check model files).")
-
+ 
         # 3. Test Concurrent Request Latencies (Load Testing)
         print("\n[2] Testing Concurrent Requests Load handling:")
         concurrent_counts = [5, 10, 20]
@@ -87,7 +87,7 @@ async def main():
         for count in concurrent_counts:
             print(f"  - Dispatching {count} concurrent prediction requests...")
             start_load = time.perf_counter()
-            tasks = [test_single_request(client, data_224) for _ in range(count)]
+            tasks = [_run_single_request(client, data_224) for _ in range(count)]
             results = await asyncio.gather(*tasks)
             total_duration = time.perf_counter() - start_load
             

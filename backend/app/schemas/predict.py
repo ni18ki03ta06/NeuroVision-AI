@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import Dict, Optional
 
 class PredictionResponse(BaseModel):
+    id: Optional[int] = None
     tumor_type: str
     severity_class: str
     risk_level: str

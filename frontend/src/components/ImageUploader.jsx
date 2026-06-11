@@ -79,6 +79,15 @@ export default function ImageUploader({ onFileSelected, disabled }) {
   return (
     <div 
       className={`dropzone ${isDragActive ? 'dropzone-active' : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-label="Upload Brain MRI Scan slice. Press Enter or Space to select files, or drag and drop image files."
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onButtonClick(e);
+        }
+      }}
       onDragEnter={handleDrag}
       onDragOver={handleDrag}
       onDragLeave={handleDrag}
@@ -125,6 +134,7 @@ export default function ImageUploader({ onFileSelected, disabled }) {
             />
             <button 
               onClick={clearSelection}
+              aria-label="Clear selected file"
               style={{ position: 'absolute', top: '8px', right: '8px', background: 'rgba(7, 9, 14, 0.75)', border: '1px solid var(--border-color)', color: '#fff', padding: '4px', borderRadius: '50%', cursor: 'pointer' }}
             >
               <X size={12} />
