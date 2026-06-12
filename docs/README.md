@@ -282,8 +282,3 @@ For demonstration materials, capture high-resolution captures of the following f
 4.  Vite Front-end Tooling. https://vite.dev/
 
 ---
-
-## 12. Team Members & Contact
-*   **Lead Student developer:** [Your Name] — CSE Department | [Your Email]
-*   **Project Guide / Supervisor:** [Supervisor Name] — Designation | CSE Research Division
-*   **Institution:** Institute of Advanced Technology
