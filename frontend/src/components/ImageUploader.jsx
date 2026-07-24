@@ -96,7 +96,7 @@ export default function ImageUploader({ onFileSelected, disabled }) {
       style={{ 
         opacity: disabled ? 0.6 : 1, 
         cursor: disabled ? 'not-allowed' : 'pointer',
-        padding: previewUrl ? '15px' : '30px 20px',
+        padding: previewUrl ? '10px' : '14px 10px',
         borderStyle: previewUrl ? 'solid' : 'dashed'
       }}
     >
@@ -112,14 +112,14 @@ export default function ImageUploader({ onFileSelected, disabled }) {
       {!previewUrl ? (
         <>
           <div className="dropzone-icon">
-            <Upload size={28} />
+            <Upload size={20} />
           </div>
           <div>
-            <p style={{ fontWeight: 600, color: '#e6edf3', fontSize: '13px' }}>
-              Upload Brain MRI Scan(s)
+            <p style={{ fontWeight: 600, color: '#e6edf3', fontSize: '12px' }}>
+              Upload MRI Scan(s)
             </p>
-            <p style={{ fontSize: '11px', color: '#8b949e', marginTop: '4px' }}>
-              Drag & drop T1, T1C+, or T2 scans
+            <p style={{ fontSize: '10px', color: '#8b949e', marginTop: '2px' }}>
+              Drag & drop T1, T1C+, T2
             </p>
           </div>
         </>

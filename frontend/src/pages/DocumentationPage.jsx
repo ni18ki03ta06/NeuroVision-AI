@@ -1,347 +1,686 @@
 import React, { useState } from 'react';
-import { BookOpen, Network, BarChart2, ShieldAlert, Info, ChevronRight, Activity, Database, HelpCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Brain, 
+  Database, 
+  ShieldAlert, 
+  Microscope, 
+  Scan, 
+  Activity, 
+  Layers, 
+  CheckCircle2, 
+  Eye, 
+  FileText, 
+  Sparkles, 
+  Cpu, 
+  Zap, 
+  Award, 
+  ArrowRight,
+  ChevronRight,
+  TrendingUp,
+  BarChart3,
+  Sliders,
+  AlertTriangle,
+  Info,
+  Maximize2,
+  Lock,
+  GitCommit,
+  CheckCircle
+} from 'lucide-react';
 
-export default function DocumentationPage() {
-  const [activeSubTab, setActiveSubTab] = useState('how_it_works');
+// ── 1. Hero Header Component ──────────────────────────────────────────
+export function MethodologyHeader() {
+  return (
+    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
+      <div className="space-y-2">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>NeuroVision AI Engine v1.0</span>
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white font-display">
+          Methodology Documentation
+        </h1>
+        <p className="text-sm text-slate-400 max-w-2xl font-normal leading-relaxed">
+          Understand how NeuroVision AI processes MRI scans from image input to diagnostic report.
+        </p>
+      </div>
 
-  const subTabs = [
-    { id: 'how_it_works', label: 'How It Works', icon: <Network size={14} /> },
-    { id: 'methodology', label: 'Methodology', icon: <Activity size={14} /> },
-    { id: 'dataset', label: 'Dataset', icon: <Database size={14} /> },
-    { id: 'tumor_types', label: 'Tumor Types', icon: <Info size={14} /> },
-    { id: 'disclaimers', label: 'Limitations & Disclaimers', icon: <ShieldAlert size={14} /> }
+      {/* Info Cards */}
+      <div className="grid grid-cols-3 gap-3 w-full lg:w-auto">
+        <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between shadow-sm hover:border-violet-500/40 transition-all">
+          <div className="flex items-center justify-between gap-2 text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+            <span>Dataset</span>
+            <Database className="w-3.5 h-3.5 text-blue-400" />
+          </div>
+          <div className="mt-2 text-base font-bold text-white font-display">7,023</div>
+          <div className="text-[10px] text-slate-400">MRI Slices</div>
+        </div>
+
+        <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between shadow-sm hover:border-emerald-500/40 transition-all">
+          <div className="flex items-center justify-between gap-2 text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+            <span>Accuracy</span>
+            <Award className="w-3.5 h-3.5 text-emerald-400" />
+          </div>
+          <div className="mt-2 text-base font-bold text-emerald-400 font-display">96.5%</div>
+          <div className="text-[10px] text-slate-400">Stage 1 Test</div>
+        </div>
+
+        <div className="bg-slate-900/80 border border-slate-800/80 rounded-xl p-3.5 flex flex-col justify-between shadow-sm hover:border-violet-500/40 transition-all">
+          <div className="flex items-center justify-between gap-2 text-slate-400 text-[11px] font-semibold uppercase tracking-wider">
+            <span>Model</span>
+            <Cpu className="w-3.5 h-3.5 text-violet-400" />
+          </div>
+          <div className="mt-2 text-base font-bold text-violet-300 font-display">B2</div>
+          <div className="text-[10px] text-slate-400">EfficientNet</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── 2. Pipeline Stepper Component ─────────────────────────────────────
+export function PipelineStepper() {
+  const steps = [
+    {
+      step: '01',
+      title: 'Upload MRI',
+      description: 'Drag & drop T1, T1C+, or T2 DICOM slice file',
+      icon: Scan,
+      color: 'text-violet-400',
+      bgColor: 'bg-violet-500/10',
+      borderColor: 'border-violet-500/20'
+    },
+    {
+      step: '02',
+      title: 'Preprocessing',
+      description: '224x224 Resizing & 8x TTA augmentations',
+      icon: Layers,
+      color: 'text-blue-400',
+      bgColor: 'bg-blue-500/10',
+      borderColor: 'border-blue-500/20'
+    },
+    {
+      step: '03',
+      title: 'Tumor Detection',
+      description: 'Stage 1 4-Class deep classification',
+      icon: Brain,
+      color: 'text-violet-400',
+      bgColor: 'bg-violet-500/10',
+      borderColor: 'border-violet-500/20'
+    },
+    {
+      step: '04',
+      title: 'Severity Classification',
+      description: 'Stage 2 Pathological subtype grading',
+      icon: Activity,
+      color: 'text-amber-400',
+      bgColor: 'bg-amber-500/10',
+      borderColor: 'border-amber-500/20'
+    },
+    {
+      step: '05',
+      title: 'GradCAM',
+      description: 'Gradient heatmaps & visual attention',
+      icon: Sparkles,
+      color: 'text-cyan-400',
+      bgColor: 'bg-cyan-500/10',
+      borderColor: 'border-cyan-500/20'
+    },
+    {
+      step: '06',
+      title: 'Diagnostic Report',
+      description: 'JSON metrics output & PDF generator',
+      icon: FileText,
+      color: 'text-emerald-400',
+      bgColor: 'bg-emerald-500/10',
+      borderColor: 'border-emerald-500/20'
+    }
   ];
 
   return (
-    <div className="flex flex-col gap-8 text-slate-200">
-      
-      {/* ── Header tab navigation bar ───────────────────────── */}
-      <div className="bg-slate-900/40 border border-slate-800/80 p-5 rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h2 className="text-lg font-bold text-white flex items-center gap-2 font-display">
-            <BookOpen className="text-violet-400 w-5 h-5" /> NeuroVision AI Methodological Documentation
-          </h2>
-          <p className="text-xs text-slate-500 mt-1">Technical specifications and literature review for clinicians and developers</p>
-        </div>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-base font-bold text-white font-display flex items-center gap-2">
+          <GitCommit className="w-4 h-4 text-violet-400" />
+          <span>Diagnostic Pipeline Architecture</span>
+        </h3>
+        <span className="text-xs text-slate-400 font-mono">End-to-End Latency: ~2.2s</span>
+      </div>
 
-        {/* Tabs switcher */}
-        <div className="flex gap-1 bg-slate-950/80 p-1 rounded-lg border border-slate-850">
-          {subTabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveSubTab(tab.id)}
-              className={`flex items-center gap-1.5 py-1.5 px-3 rounded-md text-xs font-semibold transition-all ${
-                activeSubTab === tab.id
-                  ? 'bg-violet-600 text-white shadow-md'
-                  : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
-              }`}
+      {/* Responsive Stepper Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {steps.map((s, idx) => {
+          const StepIcon = s.icon;
+          return (
+            <motion.div
+              key={s.step}
+              whileHover={{ y: -3 }}
+              transition={{ duration: 0.2 }}
+              className="relative bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-slate-700 hover:shadow-violet-500/5 transition-all group"
             >
-              {tab.icon}
-              <span>{tab.label}</span>
-            </button>
+              <div className="flex items-center justify-between mb-3">
+                <div className={`p-2 rounded-xl ${s.bgColor} ${s.borderColor} border ${s.color}`}>
+                  <StepIcon className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-bold font-mono text-slate-500 px-2 py-0.5 rounded-full bg-slate-950/60 border border-slate-800">
+                  {s.step}
+                </span>
+              </div>
+
+              <div>
+                <h4 className="text-xs font-bold text-white mb-1 group-hover:text-violet-300 transition-colors font-display">
+                  {s.title}
+                </h4>
+                <p className="text-[11px] text-slate-400 leading-snug">
+                  {s.description}
+                </p>
+              </div>
+
+              {idx < steps.length - 1 && (
+                <div className="hidden lg:block absolute -right-2.5 top-1/2 -translate-y-1/2 z-10 text-slate-700">
+                  <ChevronRight className="w-4 h-4" />
+                </div>
+              )}
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── 3. Stage Card Component ───────────────────────────────────────────
+export function StageCard({ stage, title, icon: Icon, bullets, color = 'violet' }) {
+  const colorMap = {
+    violet: {
+      badge: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
+      hover: 'hover:border-violet-500/40',
+      dot: 'bg-violet-400'
+    },
+    blue: {
+      badge: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+      hover: 'hover:border-blue-500/40',
+      dot: 'bg-blue-400'
+    },
+    emerald: {
+      badge: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+      hover: 'hover:border-emerald-500/40',
+      dot: 'bg-emerald-400'
+    }
+  };
+
+  const style = colorMap[color] || colorMap.violet;
+
+  return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
+      className={`bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 shadow-md ${style.hover} transition-all space-y-4 flex flex-col justify-between`}
+    >
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className={`p-3 rounded-xl border ${style.badge}`}>
+            <Icon className="w-5 h-5" />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-950/80 px-2.5 py-1 rounded-md border border-slate-800 font-mono">
+            {stage}
+          </span>
+        </div>
+
+        <h3 className="text-base font-bold text-white mb-3 font-display">
+          {title}
+        </h3>
+
+        <ul className="space-y-2 text-xs text-slate-300">
+          {bullets.map((b, i) => (
+            <li key={i} className="flex items-center gap-2.5">
+              <span className={`w-1.5 h-1.5 rounded-full ${style.dot} flex-shrink-0`} />
+              <span>{b}</span>
+            </li>
           ))}
+        </ul>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── 4. GradCAM Card Component ─────────────────────────────────────────
+export function GradcamCard() {
+  const features = [
+    'Heatmaps (Jet, Viridis, Hot)',
+    'Visual Attention Hotspots',
+    'AI Transparency & Explainability',
+    'Grad-Weighted Activations'
+  ];
+
+  return (
+    <motion.div
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
+      className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 shadow-md hover:border-cyan-500/40 transition-all space-y-4 flex flex-col justify-between"
+    >
+      <div>
+        <div className="flex items-center justify-between mb-4">
+          <div className="p-3 rounded-xl border bg-cyan-500/10 text-cyan-400 border-cyan-500/20">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-950/60 px-2.5 py-1 rounded-md border border-cyan-800/60 font-mono">
+            Visual Hotspots
+          </span>
+        </div>
+
+        <h3 className="text-base font-bold text-white mb-3 font-display">
+          GradCAM Explainability
+        </h3>
+
+        <ul className="space-y-2 text-xs text-slate-300">
+          {features.map((f, i) => (
+            <li key={i} className="flex items-center gap-2.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0" />
+              <span>{f}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── 5. Stats Grid Component ───────────────────────────────────────────
+export function StatsGrid() {
+  const stats = [
+    { label: 'Dataset Size', value: '7,023', sub: 'MRI Slices', color: 'text-violet-400' },
+    { label: 'MRI Modalities', value: '3', sub: 'T1, T1C+, T2', color: 'text-blue-400' },
+    { label: 'Number of Classes', value: '10', sub: '4 Stage1 / 6 Stage2', color: 'text-purple-400' },
+    { label: 'Training Images', value: '5,712', sub: '80% Train Split', color: 'text-cyan-400' },
+    { label: 'Validation Images', value: '1,311', sub: '20% Holdout', color: 'text-amber-400' },
+    { label: 'Testing Images', value: '1,311', sub: 'Holdout Evaluation', color: 'text-emerald-400' },
+    { label: 'Accuracy', value: '96.5%', sub: 'Stage 1 Benchmark', color: 'text-emerald-400' },
+  ];
+
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+      {stats.map((st, i) => (
+        <motion.div
+          key={i}
+          whileHover={{ scale: 1.02 }}
+          className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-slate-700 transition-all"
+        >
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            {st.label}
+          </span>
+          <div className={`text-xl font-bold font-display my-1 ${st.color}`}>
+            {st.value}
+          </div>
+          <span className="text-[10px] text-slate-400">
+            {st.sub}
+          </span>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+// ── 6. Dataset Card Component ─────────────────────────────────────────
+export function DatasetCard() {
+  const modalities = [
+    {
+      name: 'T1-Weighted',
+      desc: 'High-resolution anatomical boundaries',
+      details: ['Exposes cerebrospinal fluid boundaries', 'Anatomical structure baseline']
+    },
+    {
+      name: 'T1C+ (Contrast)',
+      desc: 'Gadolinium contrast-enhanced slice',
+      details: ['Highlights hyper-intense vascular regions', 'Defines active tumor borders']
+    },
+    {
+      name: 'T2-Weighted',
+      desc: 'Fluid-attenuated edema sensitivity',
+      details: ['Exposes surrounding cerebral edema', 'Highlights fluid cysts & inflammation']
+    }
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      {modalities.map((m, idx) => (
+        <div key={idx} className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-bold text-white font-display">{m.name}</h4>
+            <Database className="w-4 h-4 text-blue-400" />
+          </div>
+          <p className="text-xs text-slate-400 leading-normal">{m.desc}</p>
+          <ul className="space-y-1.5 text-xs text-slate-300">
+            {m.details.map((d, i) => (
+              <li key={i} className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-blue-400 flex-shrink-0" />
+                <span>{d}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ── 7. Limitation Card Component ──────────────────────────────────────
+export function LimitationCard() {
+  const limitations = [
+    {
+      title: 'Research Use Only',
+      desc: 'Educational & research demonstration portal. Not FDA/CE certified for primary clinical diagnosis.',
+      icon: ShieldAlert,
+      color: 'text-amber-400',
+      badge: 'bg-amber-500/10 border-amber-500/20'
+    },
+    {
+      title: '2D Slice Dependency',
+      desc: 'Processes 2D axial/sagittal slices rather than full 3D volumetric DICOM segmentations.',
+      icon: Layers,
+      color: 'text-blue-400',
+      badge: 'bg-blue-500/10 border-blue-500/20'
+    },
+    {
+      title: 'Artifact Susceptibility',
+      desc: 'Severe motion artifacts or low resolution contrast can affect GradCAM visual heatmap bounds.',
+      icon: AlertTriangle,
+      color: 'text-orange-400',
+      badge: 'bg-orange-500/10 border-orange-500/20'
+    },
+    {
+      title: 'Unseen Pathology',
+      desc: 'Rare unclassified lesions default to nearest anatomical feature representation in Stage 1/2.',
+      icon: Microscope,
+      color: 'text-violet-400',
+      badge: 'bg-violet-500/10 border-violet-500/20'
+    }
+  ];
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {limitations.map((l, idx) => {
+        const LimIcon = l.icon;
+        return (
+          <motion.div
+            key={idx}
+            whileHover={{ y: -2 }}
+            className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 flex items-start gap-4 shadow-sm"
+          >
+            <div className={`p-2.5 rounded-xl border ${l.badge} ${l.color} flex-shrink-0 mt-0.5`}>
+              <LimIcon className="w-5 h-5" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="text-sm font-bold text-white font-display">{l.title}</h4>
+              <p className="text-xs text-slate-400 leading-relaxed">{l.desc}</p>
+            </div>
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+
+// ── MAIN DOCUMENTATION PAGE COMPONENT ─────────────────────────────────
+export default function DocumentationPage() {
+  const [activeTab, setActiveTab] = useState('overview');
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: Layers },
+    { id: 'pipeline', label: 'Pipeline', icon: GitCommit },
+    { id: 'models', label: 'AI Models', icon: Cpu },
+    { id: 'dataset', label: 'Dataset', icon: Database },
+    { id: 'gradcam', label: 'GradCAM', icon: Sparkles },
+    { id: 'limitations', label: 'Limitations', icon: ShieldAlert }
+  ];
+
+  return (
+    <div className="w-full max-w-[1200px] mx-auto px-4 sm:px-6 py-6 space-y-8 text-slate-200">
+      
+      {/* Hero Header */}
+      <MethodologyHeader />
+
+      {/* Modern Tabs Switcher */}
+      <div className="flex items-center justify-start overflow-x-auto pb-1 no-scrollbar">
+        <div className="flex gap-1.5 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800 shadow-inner">
+          {tabs.map((tab) => {
+            const TabIcon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
+                  isActive
+                    ? 'text-white shadow-lg'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50'
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabGlow"
+                    className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-600 rounded-xl shadow-md shadow-violet-600/30"
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  />
+                )}
+                <span className="relative z-10 flex items-center gap-2">
+                  <TabIcon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                  <span>{tab.label}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* ── Tab Content Router ───────────────────────────────── */}
-      <div className="bg-slate-900/25 border border-slate-800/60 p-6 rounded-2xl shadow-sm min-h-[400px]">
-        
-        {/* 1. How It Works Tab */}
-        {activeSubTab === 'how_it_works' && (
-          <div className="flex flex-col gap-6 max-w-4xl">
-            <div>
-              <h3 className="text-base font-bold text-white font-display">The Two-Stage Deep Classification Pipeline</h3>
-              <p className="text-xs text-slate-400 mt-1">Details on visual feature routing, augmentations, and interpretability</p>
-            </div>
+      {/* Single Active Tab Display */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.25, ease: "easeInOut" }}
+          className="space-y-8"
+        >
+          
+          {/* TAB 1: OVERVIEW */}
+          {activeTab === 'overview' && (
+            <div className="space-y-8">
+              {/* Stepper */}
+              <PipelineStepper />
 
-            {/* SVG Pipeline Diagram */}
-            <div className="bg-slate-950/40 border border-slate-850 p-6 rounded-xl flex items-center justify-center overflow-x-auto">
-              <svg width="680" height="150" viewBox="0 0 680 150" className="text-slate-400">
-                {/* Arrow markers */}
-                <defs>
-                  <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
-                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#4b5563" />
-                  </marker>
-                </defs>
+              {/* 3 Feature Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                <StageCard
+                  stage="Stage 1"
+                  title="Tumor Detection"
+                  icon={Brain}
+                  color="violet"
+                  bullets={[
+                    'Detects Glioma (High Risk)',
+                    'Detects Pituitary (Low Risk)',
+                    'Detects Meningioma (Low-High)',
+                    'Detects Healthy Brain (Normal)'
+                  ]}
+                />
 
-                {/* Input MRI Node */}
-                <rect x="10" y="50" width="100" height="50" rx="6" fill="#1e293b" stroke="#334155" strokeWidth="1.5" />
-                <text x="60" y="75" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="bold">Input MRI Scan</text>
-                <text x="60" y="90" textAnchor="middle" fill="#94a3b8" fontSize="8">(T1, T1C+, T2)</text>
+                <StageCard
+                  stage="Stage 2"
+                  title="Severity Prediction"
+                  icon={Activity}
+                  color="blue"
+                  bullets={[
+                    'Grade I (Benign / Slow Growth)',
+                    'Grade II (Atypical Lesions)',
+                    'Grade III / IV (High Aggression)',
+                    'Softmax Confidence & TTA Score'
+                  ]}
+                />
 
-                <line x1="110" y1="75" x2="150" y2="75" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrow)" />
-
-                {/* Stage 1 Node */}
-                <rect x="150" y="50" width="120" height="50" rx="6" fill="#1e1b4b" stroke="#312e81" strokeWidth="1.5" />
-                <text x="210" y="75" textAnchor="middle" fill="#a78bfa" fontSize="11" fontWeight="bold">Stage 1 Classifier</text>
-                <text x="210" y="90" textAnchor="middle" fill="#c084fc" fontSize="8">(Tumor Type Detection)</text>
-
-                <line x1="270" y1="75" x2="310" y2="75" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrow)" />
-
-                {/* Decision Junction Node */}
-                <polygon points="310,75 345,40 380,75 345,110" fill="#0f172a" stroke="#334155" strokeWidth="1.5" />
-                <text x="345" y="78" textAnchor="middle" fill="#94a3b8" fontSize="9" fontWeight="bold">Tumor?</text>
-
-                {/* Branch: No Tumor (Early exit) */}
-                <line x1="345" y1="110" x2="345" y2="135" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrow)" />
-                <text x="350" y="125" fill="#f87171" fontSize="9" fontWeight="bold">No</text>
-                
-                <rect x="295" y="135" width="100" height="30" rx="4" fill="#064e3b" stroke="#065f46" strokeWidth="1" />
-                <text x="345" y="153" textAnchor="middle" fill="#34d399" fontSize="10" fontWeight="bold">Normal Exit</text>
-
-                {/* Branch: Yes */}
-                <line x1="380" y1="75" x2="430" y2="75" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrow)" />
-                <text x="400" y="68" fill="#34d399" fontSize="9" fontWeight="bold">Yes</text>
-
-                {/* Stage 2 Node */}
-                <rect x="430" y="50" width="110" height="50" rx="6" fill="#1e1b4b" stroke="#312e81" strokeWidth="1.5" />
-                <text x="485" y="75" textAnchor="middle" fill="#a78bfa" fontSize="11" fontWeight="bold">Stage 2 Classifier</text>
-                <text x="485" y="90" textAnchor="middle" fill="#c084fc" fontSize="8">(Severity Grading)</text>
-
-                <line x1="540" y1="75" x2="570" y2="75" stroke="#4b5563" strokeWidth="1.5" markerEnd="url(#arrow)" />
-
-                {/* Output Node */}
-                <rect x="570" y="40" width="100" height="70" rx="6" fill="#0f172a" stroke="#334155" strokeWidth="1.5" />
-                <text x="620" y="65" textAnchor="middle" fill="#fff" fontSize="10" fontWeight="bold">Diagnostic JSON</text>
-                <text x="620" y="80" textAnchor="middle" fill="#38bdf8" fontSize="8">GradCAM Maps</text>
-                <text x="620" y="95" textAnchor="middle" fill="#34d399" fontSize="8">PDF Generation</text>
-              </svg>
-            </div>
-
-            {/* Stage Detailed Explanations */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-              <div className="flex flex-col gap-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-400">Stage 1: Tumor Type Classification (4 Classes)</h4>
-                <p className="text-xs leading-relaxed text-slate-350">
-                  Runs the initial diagnostic layer on the incoming slice. The model classifies the feature inputs into **Glioma**, **Meningioma**, **Pituitary**, or **No Tumor**. If "No Tumor" is classified, the system completes inference early, logging the case as healthy.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-400">Stage 2: Severity Classification (6 Classes)</h4>
-                <p className="text-xs leading-relaxed text-slate-350">
-                  If Stage 1 indicates a tumor anomaly, the scan is passed into the Stage 2 classifier. This model performs similarity grading across six folders corresponding to specific pathological subtypes: **Glioma**, **Meningioma**, **Neurocytoma**, **Normal**, **Other Lesions**, and **Schwannoma**.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-400">Test-Time Augmentation (TTA)</h4>
-                <p className="text-xs leading-relaxed text-slate-350">
-                  Medical image slices can vary in rotation, cropping, and contrast. To increase classifier robustness, the system uses **8x TTA**. The scan is transformed into 8 augmented views. Softmax probabilities from all 8 views are averaged to yield the final prediction, reducing false-positive rates.
-                </p>
-              </div>
-              <div className="flex flex-col gap-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-400">GradCAM Gradient Explanations</h4>
-                <p className="text-xs leading-relaxed text-slate-350">
-                  GradCAM calculates the gradients of the target class score with respect to feature map activations in the final convolutional layer of EfficientNet. This exposes the spatial localization "hot-spots" directly driving classification, offering radiologists explainable visual bounds.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 2. Methodology Tab */}
-        {activeSubTab === 'methodology' && (
-          <div className="flex flex-col gap-6 max-w-4xl">
-            <div>
-              <h3 className="text-base font-bold text-white font-display">Deep Learning Methodology</h3>
-              <p className="text-xs text-slate-400 mt-1">Model backbones, transfer learning configs, and fine-tuning parameters</p>
-            </div>
-
-            <div className="flex flex-col gap-4 text-xs leading-relaxed text-slate-350">
-              <p>
-                <strong>Model Architecture Selection: EfficientNet-B2</strong><br />
-                We utilize **EfficientNet-B2** as our feature extractor. EfficientNet models scale network depth, width, and input resolution uniformly using a compound coefficient. B2 provides an optimal balance between parameter capacity (~7.7M parameters) and diagnostic accuracy, avoiding the over-fitting typical of heavier architectures on limited medical datasets.
-              </p>
-              <p>
-                <strong>Transfer Learning Approach</strong><br />
-                The networks are initialized with pre-trained weights from the ImageNet database. This equips the convolutional layers with robust generalized feature-extracting capabilities (such as edges, blobs, and textures), reducing training convergence time and parameter requirements.
-              </p>
-              <p>
-                <strong>Fine-Tuning Strategy</strong><br />
-                To adapt the backbone to neuro-oncology diagnostics, we freeze the early layers and unfreeze only the final two feature blocks (specifically layers `features.7` and `features.8`) along with the classifier head. The classification head is replaced with a custom MLP: <code>Linear (1408 &rarr; 512) &rarr; BatchNorm &rarr; SiLU &rarr; Dropout (0.3) &rarr; Linear (512 &rarr; classes)</code>. This unfreezing strategy allows the network to preserve early edge detection weights while tailoring receptive fields to high-level tumor textures.
-              </p>
-              <div className="bg-slate-950/30 border border-slate-850 p-4 rounded-xl mt-2">
-                <h4 className="text-[11px] font-bold text-white uppercase tracking-wider mb-2 font-display">Validated Performance Metrics</h4>
-                <ul className="list-disc pl-5 flex flex-col gap-1 text-[11px] text-slate-400">
-                  <li><strong>Stage 1 (Tumor/Normal):</strong> Accuracy: 96.5% | Precision: 95.2% | Recall: 94.8% | F1: 95.0%</li>
-                  <li><strong>Stage 2 (Severity Grading):</strong> Accuracy: 91.5% | Precision: 90.8% | Recall: 91.2% | F1: 91.0%</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* 3. Dataset Tab */}
-        {activeSubTab === 'dataset' && (
-          <div className="flex flex-col gap-6 max-w-4xl">
-            <div>
-              <h3 className="text-base font-bold text-white font-display">Dataset Details & Preprocessing</h3>
-              <p className="text-xs text-slate-400 mt-1">Image counts, sequence modalities, and normalization parameters</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed text-slate-350">
-              <div className="flex flex-col gap-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-400">MRI Sequence Modalities</h4>
-                <ul className="list-disc pl-5 flex flex-col gap-1.5 text-slate-400">
-                  <li><strong>T1-Weighted:</strong> Exposes anatomical boundaries and cerebrospinal fluid.</li>
-                  <li><strong>T1C+ (Contrast-Enhanced):</strong> Utilizes Gadolinium contrast to highlight hyper-intense vascular regions, defining tumor boundaries.</li>
-                  <li><strong>T2-Weighted:</strong> Fluid-attenuated sensitive slice, highlighting surrounding edema and cysts.</li>
-                </ul>
+                <GradcamCard />
               </div>
 
-              <div className="flex flex-col gap-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-400">Preprocessing & Normalization</h4>
-                <p className="text-slate-400 leading-normal">
-                  Before passing slices into the model, images are resized to **224x224** pixels and scaled to [0.0, 1.0]. Standard PyTorch Normalization is executed:
-                </p>
-                <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-850 font-mono text-[10px] text-violet-300">
-                  Mean = [0.1835, 0.1835, 0.1836]<br />
-                  Std  = [0.1814, 0.1814, 0.1814]
+              {/* Stats Summary */}
+              <div className="space-y-3 pt-2">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-white font-display">System Benchmarks</h3>
+                  <span className="text-xs text-slate-400">Validated on 7,023 Slices</span>
                 </div>
+                <StatsGrid />
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: PIPELINE */}
+          {activeTab === 'pipeline' && (
+            <div className="space-y-8">
+              <PipelineStepper />
+
+              <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
+                <h3 className="text-base font-bold text-white font-display flex items-center gap-2">
+                  <GitCommit className="w-4 h-4 text-violet-400" />
+                  <span>Pipeline Logic & Data Flow</span>
+                </h3>
+                <ul className="space-y-3 text-xs text-slate-300">
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-mono">01</span>
+                    <div>
+                      <strong className="text-white block font-display mb-0.5">Input Slice Processing</strong>
+                      <span className="text-slate-400">The user uploads an MRI slice (T1, T1C+, or T2). Images are normalized and scaled to [0.0, 1.0].</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-lg bg-blue-500/10 border border-blue-500/20 text-blue-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-mono">02</span>
+                    <div>
+                      <strong className="text-white block font-display mb-0.5">8x Test-Time Augmentation (TTA)</strong>
+                      <span className="text-slate-400">Generates 8 transformed views (rotations, flips, contrast shifts) to eliminate rotation bias and ensure consistent output.</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-lg bg-violet-500/10 border border-violet-500/20 text-violet-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-mono">03</span>
+                    <div>
+                      <strong className="text-white block font-display mb-0.5">Stage 1 Anomaly Gating</strong>
+                      <span className="text-slate-400">If Stage 1 classifies "No Tumor", the pipeline completes early with a healthy status log.</span>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="w-6 h-6 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5 font-mono">04</span>
+                    <div>
+                      <strong className="text-white block font-display mb-0.5">Stage 2 Subtype Grading</strong>
+                      <span className="text-slate-400">If a tumor is present, Stage 2 performs similarity grading across 6 pathological subtype classes.</span>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: AI MODELS */}
+          {activeTab === 'models' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <StageCard
+                  stage="Stage 1 Classifier"
+                  title="Tumor Type Classifier (4 Classes)"
+                  icon={Brain}
+                  color="violet"
+                  bullets={[
+                    'EfficientNet-B2 Backbone (~7.7M params)',
+                    'Softmax probabilities across 4 categories',
+                    '96.5% Benchmark Accuracy',
+                    'Early exit gating for healthy brain scans'
+                  ]}
+                />
+
+                <StageCard
+                  stage="Stage 2 Classifier"
+                  title="Severity Subtype Classifier (6 Classes)"
+                  icon={Activity}
+                  color="blue"
+                  bullets={[
+                    'Grading across 6 pathological folders',
+                    'Differentiates Glioma, Meningioma, Neurocytoma',
+                    'Assesses WHO Grade I to IV risk levels',
+                    '91.5% Subtype Classification Accuracy'
+                  ]}
+                />
               </div>
 
-              <div className="flex flex-col gap-3 md:col-span-2">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-violet-400">Train/Test Data Splits</h4>
-                <p className="text-slate-400">
-                  The models were trained using a total of **7,023** MRI slice files compiled from public repositories (such as Figshare and BraTS). Slices are split as follows:
-                </p>
-                <div className="grid grid-cols-3 gap-4 text-center mt-1">
-                  <div className="bg-slate-950/20 border border-slate-850 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-white font-display">5,712</div>
-                    <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">Training Slices</div>
+              <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
+                <h3 className="text-base font-bold text-white font-display flex items-center gap-2">
+                  <Cpu className="w-4 h-4 text-violet-400" />
+                  <span>Architecture & Fine-Tuning Setup</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-300">
+                  <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                    <strong className="text-white block font-display">Backbone Network</strong>
+                    <p className="text-slate-400">EfficientNet-B2 with compound scaling across depth, width, and resolution.</p>
                   </div>
-                  <div className="bg-slate-950/20 border border-slate-850 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-white font-display">1,311</div>
-                    <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">Test Slices</div>
+                  <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                    <strong className="text-white block font-display">Transfer Learning</strong>
+                    <p className="text-slate-400">Pre-trained ImageNet weights with unfrozen top features blocks (layers 7 & 8).</p>
                   </div>
-                  <div className="bg-slate-950/20 border border-slate-850 p-3 rounded-lg">
-                    <div className="text-lg font-bold text-white font-display">20%</div>
-                    <div className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">Hold-out Validation</div>
+                  <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-1">
+                    <strong className="text-white block font-display">Classifier Head</strong>
+                    <p className="text-slate-400">Linear (1408 &rarr; 512) &rarr; BatchNorm &rarr; SiLU &rarr; Dropout (0.3) &rarr; Output.</p>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* 4. Tumor Types Tab */}
-        {activeSubTab === 'tumor_types' && (
-          <div className="flex flex-col gap-6 max-w-4xl">
-            <div>
-              <h3 className="text-base font-bold text-white font-display">Anatomical Profiles of Classified Anomalies</h3>
-              <p className="text-xs text-slate-400 mt-1">Descriptions and severity risks for neuro-oncology tumor classifications</p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              
-              {/* Glioma */}
-              <div className="bg-slate-950/30 border border-slate-850 p-4 rounded-xl flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-bold text-white font-display">Glioma</h4>
-                  <span className="text-[9px] font-bold text-red-400 bg-red-950/40 border border-red-800/60 px-2 py-0.5 rounded uppercase">High Risk</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Originates in the glial support cells of the brain. Subtypes include Astrocytoma, Oligodendroglioma, and Glioblastoma Multiforme (GBM). Represents Grade 1-4. Grade 4 GBMs are highly aggressive and rapidly growing.
-                </p>
-              </div>
-
-              {/* Meningioma */}
-              <div className="bg-slate-950/30 border border-slate-850 p-4 rounded-xl flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-bold text-white font-display">Meningioma</h4>
-                  <span className="text-[9px] font-bold text-amber-400 bg-amber-950/40 border border-amber-800/60 px-2 py-0.5 rounded uppercase">Low-High Risk</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Arises from the meningeal membranes surrounding the brain and spinal cord. Typically slow-growing (Grade 1 benign), but can range to atypical (Grade 2) or anaplastic (Grade 3), causing localized pressure.
-                </p>
-              </div>
-
-              {/* Pituitary */}
-              <div className="bg-slate-950/30 border border-slate-850 p-4 rounded-xl flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-bold text-white font-display">Pituitary</h4>
-                  <span className="text-[9px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded uppercase">Low Risk</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Originates in the pituitary gland at the skull base. Most are benign adenomas. Though non-cancerous, their growth can compress the optic chiasm, causing visual impairment, or disrupt hormone secretion.
-                </p>
-              </div>
-
-              {/* Schwannoma */}
-              <div className="bg-slate-950/30 border border-slate-850 p-4 rounded-xl flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-bold text-white font-display">Schwannoma</h4>
-                  <span className="text-[9px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded uppercase">Low Risk</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Develops from myelin-producing Schwann cells covering cranial nerves (most commonly the vestibular nerve, leading to acoustic neuromas). Typically slow-growing and benign (Grade 1).
-                </p>
-              </div>
-
-              {/* Neurocytoma */}
-              <div className="bg-slate-950/30 border border-slate-850 p-4 rounded-xl flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-bold text-white font-display">Neurocytoma</h4>
-                  <span className="text-[9px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-800/60 px-2 py-0.5 rounded uppercase">Low Risk</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Typically benign intraventricular tumors arising from neuronal cells, usually located in the lateral ventricles near the foramen of Monro. Can obstruct CSF flow, causing hydrocephalus.
-                </p>
-              </div>
-
-              {/* Others */}
-              <div className="bg-slate-950/30 border border-slate-850 p-4 rounded-xl flex flex-col gap-2">
-                <div className="flex justify-between items-center">
-                  <h4 className="text-xs font-bold text-white font-display">Other Lesions</h4>
-                  <span className="text-[9px] font-bold text-amber-400 bg-amber-950/40 border border-amber-800/60 px-2 py-0.5 rounded uppercase">Medium Risk</span>
-                </div>
-                <p className="text-xs text-slate-400 leading-relaxed">
-                  Encompasses overlapping features from abscesses, arachnoid cysts, hematomas, or encephalitis anomalies. The classification serves as an alert flag suggesting radiologist review.
-                </p>
-              </div>
-
-            </div>
-          </div>
-        )}
-
-        {/* 5. Limitations & Disclaimers */}
-        {activeSubTab === 'disclaimers' && (
-          <div className="flex flex-col gap-6 max-w-4xl text-xs leading-relaxed text-slate-350">
-            <div>
-              <h3 className="text-base font-bold text-white font-display">Limitations & Disclaimers</h3>
-              <p className="text-xs text-slate-400 mt-1">Regulatory warnings, medical limits, and context boundaries</p>
-            </div>
-
-            <div className="flex flex-col gap-4">
-              <div className="bg-amber-950/20 border border-amber-900/40 text-amber-400 p-4 rounded-xl flex items-start gap-3">
-                <ShieldAlert className="w-5 h-5 flex-shrink-0 mt-0.5" />
-                <div className="flex flex-col gap-1">
-                  <strong>Research Use Only Disclaimer</strong>
-                  <span>
-                    This dashboard runs custom deep-learning classifiers on MRI slices for educational and research demonstration purposes. It does not provide certified medical diagnoses and has not received FDA or CE approval for clinical use.
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2.5">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider font-display">Clinical Workflow Context</h4>
-                <p>
-                  This system is designed as a computer-aided exploration dashboard. It should only be used by trained medical professionals or researchers to inspect convolutional activation boundaries. It must never substitute for histopathological biopsies or formal evaluations by certified radiologists.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-2.5">
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider font-display">Model Limitations</h4>
-                <ul className="list-disc pl-5 flex flex-col gap-1.5 text-slate-400">
-                  <li><strong>2D Slice Dependency:</strong> The models process individual 2D axial/sagittal slices rather than full 3D volumetric DICOM segmentations. Volume estimation is not performed.</li>
-                  <li><strong>Artifact Susceptibility:</strong> Low-resolution scans, motion artifacts, or contrast inconsistencies can lead to GradCAM displacement or incorrect classification.</li>
-                  <li><strong>Unseen Pathology:</strong> Rare pathologies (such as metastases or lymphoma) may be misclassified into glioma or other lesions, as the models are constrained to pre-trained classes.</li>
-                </ul>
+          {/* TAB 4: DATASET */}
+          {activeTab === 'dataset' && (
+            <div className="space-y-6">
+              <StatsGrid />
+              <div className="space-y-3">
+                <h3 className="text-sm font-bold text-white font-display">MRI Modality Breakdown</h3>
+                <DatasetCard />
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-      </div>
+          {/* TAB 5: GRADCAM */}
+          {activeTab === 'gradcam' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <GradcamCard />
+
+                <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-6 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-base font-bold text-white font-display">Visual Attention Mapping</h3>
+                    <Sparkles className="w-4 h-4 text-cyan-400" />
+                  </div>
+                  <ul className="space-y-2.5 text-xs text-slate-300">
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0 mt-1.5" />
+                      <span><strong>Gradient Extraction:</strong> Computes gradients of the target class score relative to feature maps in the final conv layer.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0 mt-1.5" />
+                      <span><strong>Spatial Localization:</strong> Highlights exact tissue region driving the network's prediction.</span>
+                    </li>
+                    <li className="flex items-start gap-2.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 flex-shrink-0 mt-1.5" />
+                      <span><strong>Colormaps:</strong> Jet, Viridis, Hot, Plasma, Inferno, and Magma opacity overlays.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: LIMITATIONS */}
+          {activeTab === 'limitations' && (
+            <div className="space-y-6">
+              <LimitationCard />
+            </div>
+          )}
+
+        </motion.div>
+      </AnimatePresence>
 
     </div>
   );

@@ -1,6 +1,5 @@
 import torch
 import torch.nn.functional as F
-import streamlit as st
 import sys
 sys.path.append('.')
 from config import *
@@ -70,7 +69,6 @@ def predict_with_tta(model, pil_image, image_size=224):
 
 _MODEL_CACHE = {}
 
-@st.cache_resource
 def load_models():
     if 's1' in _MODEL_CACHE and 's2' in _MODEL_CACHE:
         return _MODEL_CACHE['s1'], _MODEL_CACHE['s2'], None

@@ -121,6 +121,7 @@ def cleanup_files(paths: List[str]):
 # ── API Routes ────────────────────────────────────────────────
 
 @app.get("/health")
+@app.get("/api/health")
 async def health_check():
     return {
         "status": "ok", 
@@ -390,6 +391,7 @@ async def predict_mri_batch(
     return results
 
 @app.get("/api/history")
+@app.get("/api/predictions/history")
 async def get_history():
     """Retrieves list of all past MRI scan predictions."""
     try:
@@ -399,6 +401,7 @@ async def get_history():
         raise HTTPException(status_code=500, detail=f"Failed to retrieve history: {str(e)}")
 
 @app.delete("/api/history/{id}")
+@app.delete("/api/predictions/history/{id}")
 async def delete_history_item(id: int):
     """Deletes a specific past MRI scan prediction from history."""
     try:

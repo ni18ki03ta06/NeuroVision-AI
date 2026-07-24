@@ -631,14 +631,15 @@ export default function HistoryPage() {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '12px' }}>
                     {selectedCase.stage1_confidences && Object.entries(selectedCase.stage1_confidences).map(([cls, val]) => {
                       const isTop = val === Math.max(...Object.values(selectedCase.stage1_confidences));
+                      const pctVal = val > 1 ? val : val * 100;
                       return (
                         <div key={cls}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px', marginBottom: '3px' }}>
-                            <span style={{ color: isTop ? 'var(--text-bright)' : 'var(--text-muted)', fontWeight: isTop ? 600 : 450 }}>{cls}</span>
-                            <span style={{ color: isTop ? '#a78bfa' : 'var(--text-muted)', fontWeight: isTop ? 700 : 500 }}>{(val * 100).toFixed(1)}%</span>
+                            <span style={{ color: isTop ? 'var(--text-bright)' : 'var(--text-muted)', fontWeight: isTop ? 600 : 450, textTransform: 'capitalize' }}>{cls}</span>
+                            <span style={{ color: isTop ? '#a78bfa' : 'var(--text-muted)', fontWeight: isTop ? 700 : 500 }}>{pctVal.toFixed(1)}%</span>
                           </div>
                           <div style={{ width: '100%', height: '5px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
-                            <div style={{ width: `${val * 100}%`, height: '100%', background: isTop ? 'var(--primary-accent)' : 'var(--border-color)' }} />
+                            <div style={{ width: `${Math.min(pctVal, 100)}%`, height: '100%', background: isTop ? 'var(--primary-accent)' : 'var(--border-color)' }} />
                           </div>
                         </div>
                       );

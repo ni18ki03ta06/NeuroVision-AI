@@ -142,21 +142,31 @@ export default function HomePage({ setActiveTab }) {
         </div>
       </div>
 
-      {/* ── 4. Academic Switch Links ─────────────────────────── */}
-      <div className="bg-slate-900/20 border border-slate-800/60 rounded-xl p-5 flex flex-wrap items-center justify-between gap-4">
+      {/* ── 4. System Navigation Quick Actions ───────────────── */}
+      <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 flex flex-wrap items-center justify-between gap-4 shadow-md">
         <div className="flex items-center gap-3">
-          <span className="text-xl">🎓</span>
+          <div className="p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-violet-400">
+            <Brain className="w-5 h-5" />
+          </div>
           <div>
-            <h4 className="text-xs font-semibold text-white">Undergraduate Capstone Portfolio</h4>
-            <p className="text-[11px] text-slate-500">Supervised by the CS Engineering Research Division</p>
+            <h4 className="text-sm font-bold text-white font-display">Ready to Analyze MRI Slices?</h4>
+            <p className="text-xs text-slate-400">Upload scan files to run instant two-stage neural network inference.</p>
           </div>
         </div>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-3">
           <button 
             onClick={() => setActiveTab('results')} 
-            className="text-xs font-semibold text-violet-400 hover:text-violet-300 transition-colors duration-150 flex items-center gap-1"
+            className="px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white bg-slate-800/60 hover:bg-slate-800 border border-slate-700/80 rounded-xl transition-all flex items-center gap-2"
           >
-            <Activity className="w-3.5 h-3.5" /> Performance Charts
+            <Activity className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Performance Charts</span>
+          </button>
+          <button 
+            onClick={() => setActiveTab('analyze')} 
+            className="px-4 py-2 text-xs font-semibold text-white bg-violet-600 hover:bg-violet-500 rounded-xl shadow-md shadow-violet-600/25 transition-all flex items-center gap-2"
+          >
+            <Play size={14} fill="currentColor" />
+            <span>Start Analysis</span>
           </button>
         </div>
       </div>
