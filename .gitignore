@@ -71,3 +71,5 @@ results/
 !requirements.txt
 !package.json
 !.env.example
+!backend/models/
+!backend/models/*.pth

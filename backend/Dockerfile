@@ -14,7 +14,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code and config files
-COPY main.py config.py .env.example .env ./
+COPY main.py config.py .env.example* ./
+RUN if [ -f .env.example ] && [ ! -f .env ]; then cp .env.example .env; fi
 COPY src/ ./src/
 COPY models/ ./models/
 COPY fonts/ ./fonts/
