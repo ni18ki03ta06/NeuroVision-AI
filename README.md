@@ -125,3 +125,10 @@ npm run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+---
+
+## 🌐 Production Cloud Deployment
+
+For full cloud deployment instructions (Vercel + Render / Railway / Docker VPS):
+👉 Read the complete [Deployment Guide](docs/DEPLOYMENT.md) for step-by-step instructions.
