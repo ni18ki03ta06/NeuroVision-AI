@@ -4,35 +4,75 @@ NeuroVision AI is a research-grade, deep learning medical diagnostic application
 
 ---
 
-## 📸 Interface Screenshots & Gallery
+## 📸 Project Demonstration & Screenshot Gallery
 
-### 1. Modern Methodology Documentation Page
-> Redesigned medical AI dashboard UI showcasing scannable methodology tabs, stage 1 & 2 pipeline steppers, dataset statistics, and GradCAM explainability details.
-![Methodology Documentation](docs/screenshots/methodology_documentation.png)
-
----
-
-### 2. Real-Time MRI Analysis Console
-> Interactive MRI slice inspector featuring multi-modality processing, GradCAM activation colormap overlays (Jet, Hot, Viridis, Plasma), probability distribution bars, and digital PDF report signatures.
-![MRI Analysis Console](docs/screenshots/mri_analysis_console.png)
+### 1. Dashboard Overview
+![Dashboard Overview](docs/screenshots/screenshot_01.png)
 
 ---
 
-### 3. Model Telemetry & Performance Metrics
-> Comprehensive performance charts displaying accuracy breakdowns, confusion matrix heatmaps, training loss curves, ROC sensitivity, and confidence density histograms.
-![Performance Metrics](docs/screenshots/performance_metrics.png)
+### 2. MRI Scan Analysis Console
+![MRI Scan Analysis Console](docs/screenshots/screenshot_02.png)
 
 ---
 
-### 4. Archive Case History Inspector
-> Historical prediction repository with multi-attribute filtering (Patient ID, Modality, Tumor Class), CSV export, and full modal overlay inspection.
-![Case History Archive](docs/screenshots/case_history_archive.png)
+### 3. Model Prediction & GradCAM Spatial Heatmap
+![Model Prediction & GradCAM Heatmap](docs/screenshots/screenshot_03.png)
 
 ---
 
-### 5. High-Level System Architecture
-> Overview of the decoupled client-server data flow, PyTorch model caching, asynchronous TTA inference, and automated PDF report generation.
-![System Overview](docs/screenshots/system_overview.png)
+### 4. Interactive Colormap Selection & Opacity Tuning
+![Colormap Selection & Opacity Tuning](docs/screenshots/screenshot_04.png)
+
+---
+
+### 5. Probability Confidence Distributions
+![Probability Confidence Distributions](docs/screenshots/screenshot_05.png)
+
+---
+
+### 6. Clinical PDF Report Sign-Off & Export
+![Clinical PDF Report Sign-Off](docs/screenshots/screenshot_06.png)
+
+---
+
+### 7. Performance Metrics & Model Telemetry
+![Performance Metrics](docs/screenshots/screenshot_07.png)
+
+---
+
+### 8. Confusion Matrix Heatmap & Accuracy Breakdown
+![Confusion Matrix & Accuracy Breakdown](docs/screenshots/screenshot_08.png)
+
+---
+
+### 9. ROC Curves & Loss/Accuracy Training History
+![ROC Curves & Training History](docs/screenshots/screenshot_09.png)
+
+---
+
+### 10. Archive Case History Database & Filtering
+![Archive Case History](docs/screenshots/screenshot_10.png)
+
+---
+
+### 11. Case Archive Inspector Modal
+![Case Archive Inspector](docs/screenshots/screenshot_11.png)
+
+---
+
+### 12. Methodology Documentation Header & Stepper
+![Methodology Documentation Stepper](docs/screenshots/screenshot_12.png)
+
+---
+
+### 13. Two-Stage Classification Pipeline Breakdown
+![Two-Stage Classification Pipeline](docs/screenshots/screenshot_13.png)
+
+---
+
+### 14. Dataset Modalities & Technical Disclaimers
+![Dataset Modalities & Disclaimers](docs/screenshots/screenshot_14.png)
 
 ---
 
