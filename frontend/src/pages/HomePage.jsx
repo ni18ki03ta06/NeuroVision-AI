@@ -41,14 +41,7 @@ export default function HomePage({ setActiveTab }) {
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-600/5 rounded-full blur-3xl -z-10" />
         
         <div className="flex flex-col gap-6 max-w-3xl">
-          {/* Institution Label */}
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-violet-400">
-            <span className="px-2.5 py-1 bg-violet-500/10 border border-violet-500/20 rounded-md">
-              Department of Computer Science & Engineering
-            </span>
-            <span className="text-slate-500">•</span>
-            <span className="text-slate-400">Institute of Advanced Technology</span>
-          </div>
+
 
           {/* Project Title & Tagline */}
           <div className="flex flex-col gap-2">
